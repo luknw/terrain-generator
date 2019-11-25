@@ -5,6 +5,7 @@ import model.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TransformationP7 implements Transformation {
@@ -41,11 +42,15 @@ public class TransformationP7 implements Transformation {
 
     private Optional<OrientedInterior> orient(ModelGraph graph, InteriorNode interiorNode) {
 
-        List<Vertex> hangingNodes = interiorNode.getAssociatedNodes();
+        List<Vertex> associatedNodes = interiorNode.getAssociatedNodes();
 
-        // check for the correct number and type of hanging nodes
-        if (hangingNodes.size() != 2
-                || hangingNodes.stream().anyMatch(v -> v.getVertexType() != VertexType.HANGING_NODE)) {
+        // extract hanging nodes
+        List<Vertex> hangingNodes = associatedNodes.stream()
+                .filter(n -> n.getVertexType() == VertexType.HANGING_NODE)
+                .collect(Collectors.toList());
+
+        // check for the correct number of hanging nodes
+        if (hangingNodes.size() != 2) {
             return Optional.empty();
         }
 
